@@ -28,7 +28,7 @@ Requirements:
 13. Ensure the page is accessible with proper ARIA attributes
 
 TAILWIND CSS REQUIREMENTS:
-1. Include the latest Tailwind CSS via CDN in the head section
+1. Include the latest Tailwind CSS via CDN in the head section with this exact tag: <script src="https://cdn.tailwindcss.com"></script>
 2. Use Tailwind's utility classes for all styling (colors, spacing, typography, etc.)
 3. Implement a colorful design using Tailwind's color palette (blue, indigo, purple, pink, etc.)
 4. Use Tailwind's flex and grid utilities for precise layout and alignment
@@ -69,6 +69,7 @@ IMPORTANT:
 - Include DETAILED CONTENT in each section, not just placeholders or "More content follows..." comments.
 - Implement ALL features mentioned in the prompt with full detail and styling.
 - The page should be PRODUCTION-READY, as if it were going to be deployed immediately.
+- MAKE SURE to include the Tailwind CSS CDN script tag in the head section.
 `;
 
     console.log("Generating HTML...");

@@ -9,6 +9,44 @@ function PagePreview({ html, isLoading, progressMessage, onRegenerate }) {
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [iframeHeight, setIframeHeight] = useState(600);
 
+  // Ensure Tailwind CSS is included in the HTML
+  const ensureTailwindCSS = (htmlContent) => {
+    if (!htmlContent) return htmlContent;
+    
+    // Check if Tailwind is already included
+    if (htmlContent.includes('tailwindcss') || htmlContent.includes('tailwind.css')) {
+      return htmlContent;
+    }
+    
+    // Add Tailwind CSS via CDN to the head
+    const headEndIndex = htmlContent.toLowerCase().indexOf('</head>');
+    if (headEndIndex !== -1) {
+      const tailwindCDN = '<script src="https://cdn.tailwindcss.com"></script>';
+      return htmlContent.slice(0, headEndIndex) + tailwindCDN + htmlContent.slice(headEndIndex);
+    }
+    
+    // If no head tag, wrap the content with proper HTML structure including Tailwind
+    if (!htmlContent.toLowerCase().includes('<html')) {
+      return `
+        <!DOCTYPE html>
+        <html>
+          <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <script src="https://cdn.tailwindcss.com"></script>
+          </head>
+          <body>
+            ${htmlContent}
+          </body>
+        </html>
+      `;
+    }
+    
+    return htmlContent;
+  };
+
+  const htmlWithTailwind = ensureTailwindCSS(sanitizedHtml);
+
   useEffect(() => {
     if (html && iframeRef.current) {
       // Wait for iframe to load then adjust height
@@ -72,7 +110,7 @@ function PagePreview({ html, isLoading, progressMessage, onRegenerate }) {
         {html ? (
           <iframe
             ref={iframeRef}
-            srcDoc={sanitizedHtml}
+            srcDoc={htmlWithTailwind}
             title="Page Preview"
             className="preview-frame"
             style={{ height: `${isFullscreen ? '90vh' : iframeHeight}px` }}
