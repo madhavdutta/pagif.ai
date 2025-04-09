@@ -49,14 +49,14 @@ function App() {
     toast.success('API key saved successfully!');
   };
 
-  const handlePromptSubmit = async (forceRegenerate = false) => {
+  const handlePromptSubmit = async (enhancedPrompt = prompt, forceRegenerate = false) => {
     if (!apiKey) {
       setError('Please enter an OpenAI API key first');
       setShowApiKeyManager(true);
       return;
     }
     
-    if (!prompt.trim()) {
+    if (!enhancedPrompt.trim()) {
       setError('Please enter a prompt');
       toast.error('Please enter a prompt');
       return;
@@ -84,14 +84,14 @@ function App() {
         }
       }, 2000);
       
-      let enhancedPrompt = prompt;
+      let finalPrompt = enhancedPrompt;
       
       if (forceRegenerate) {
-        enhancedPrompt += " IMPORTANT: Create a COMPLETE page with ALL sections fully implemented, not just placeholders. Include DETAILED CONTENT in each section. Use vibrant colors and Tailwind CSS for a beautiful design.";
+        finalPrompt += " IMPORTANT: Create a COMPLETE page with ALL sections fully implemented, not just placeholders. Include DETAILED CONTENT in each section. Use vibrant colors and Tailwind CSS for a beautiful design.";
         setGenerationProgress('Regenerating with more detail and better design...');
       }
       
-      const html = await generateContent(apiKey, enhancedPrompt);
+      const html = await generateContent(apiKey, finalPrompt);
       
       // Clear the interval
       clearInterval(progressInterval);
@@ -102,7 +102,7 @@ function App() {
       
       setGeneratedHtml(html);
       
-      // Add to history
+      // Add to history - store the original prompt, not the enhanced one with color theme
       const newHistoryItem = {
         id: Date.now(),
         prompt,
@@ -128,7 +128,7 @@ function App() {
   };
 
   const handleRegenerate = () => {
-    handlePromptSubmit(true);
+    handlePromptSubmit(prompt, true);
   };
 
   const loadFromHistory = (historyItem) => {
@@ -195,7 +195,7 @@ function App() {
               <PromptInput 
                 prompt={prompt} 
                 onPromptChange={setPrompt} 
-                onSubmit={() => handlePromptSubmit(false)}
+                onSubmit={handlePromptSubmit}
                 isLoading={isLoading}
               />
               {error && <p className="text-red-500 mt-2">{error}</p>}
@@ -237,22 +237,22 @@ function App() {
                 </h3>
                 <div className="space-y-2">
                   <button 
-                    onClick={() => setPrompt("Create a modern landing page for a SaaS product with hero section, features, pricing, and contact form. Use a vibrant blue and purple gradient color scheme with smooth fade-in animations for each section. Include hover effects on buttons and cards.")}
+                    onClick={() => setPrompt("Create a modern landing page for a SaaS product with hero section, features, pricing, and contact form. Include smooth fade-in animations for each section and hover effects on buttons and cards.")}
                     className="text-left p-2 w-full text-sm bg-blue-50 hover:bg-blue-100 rounded"
                   >
-                    Colorful SaaS Landing Page
+                    SaaS Landing Page
                   </button>
                   <button 
-                    onClick={() => setPrompt("Design a personal portfolio page for a photographer with a full-screen image gallery, about section, and contact information. Use a dark theme with vibrant accent colors and subtle animations when scrolling between sections. Add hover effects that zoom in on portfolio images.")}
+                    onClick={() => setPrompt("Design a personal portfolio page for a photographer with a full-screen image gallery, about section, and contact information. Use a dark theme with subtle animations when scrolling between sections. Add hover effects that zoom in on portfolio images.")}
                     className="text-left p-2 w-full text-sm bg-blue-50 hover:bg-blue-100 rounded"
                   >
-                    Colorful Photography Portfolio
+                    Photography Portfolio
                   </button>
                   <button 
-                    onClick={() => setPrompt("Create a restaurant website with an elegant hero section, animated menu that organizes food by category, and a reservation form. Use warm, vibrant colors like deep reds, oranges and golds with serif fonts. Add subtle animations for menu items and a parallax effect for the background images.")}
+                    onClick={() => setPrompt("Create a restaurant website with an elegant hero section, animated menu that organizes food by category, and a reservation form. Add subtle animations for menu items and a parallax effect for the background images.")}
                     className="text-left p-2 w-full text-sm bg-blue-50 hover:bg-blue-100 rounded"
                   >
-                    Colorful Restaurant Website
+                    Restaurant Website
                   </button>
                 </div>
               </div>
